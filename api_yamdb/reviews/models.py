@@ -1,12 +1,22 @@
 from django.db import models
 
 
+# Написать модельки Жанров и Категорий, привязать к Произведениям,
+# учесть их связь и удаление.
 class Title(models.Model):
     """Модель произведение."""
 
-    name = models.CharField(max_length=256)
-    year = models.IntegerField()
-    description = models.TextField(null=True)
+    name = models.CharField(
+        'Название',
+        max_length=256
+    )
+    year = models.IntegerField(
+        'Год'
+    )
+    description = models.TextField(
+        'Описание',
+        null=True
+    )
 
     class Meta:
         verbose_name = 'Произведение'
