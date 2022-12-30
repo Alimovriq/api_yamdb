@@ -4,6 +4,26 @@ from django.db import models
 User = get_user_model()
 
 
+class Genre(models.Model):
+    """Модель жанр."""
+
+    name = models.CharField(
+        'название',
+        max_length=256
+    )
+    slug = models.SlugField(
+        unique=True,
+        max_length=50
+    )
+
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
+    def __str__(self):
+        return self.name
+
+
 class Category(models.Model):
     """Модель категория."""
 
@@ -24,8 +44,6 @@ class Category(models.Model):
         return self.name
 
 
-# Написать модель Жанров, привязать к Произведениям,
-# учесть их связь и удаление.
 class Title(models.Model):
     """Модель произведение."""
 
@@ -47,6 +65,10 @@ class Title(models.Model):
         verbose_name='Категория',
         related_name='titles'
     )
+    genre = models.ManyToManyField(
+        Genre,
+        through='GenreTitle',
+    )
 
     class Meta:
         verbose_name = 'Произведение'
@@ -54,6 +76,24 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class GenreTitle(models.Model):
+    """Промежуточная таблица для жанров и произведений."""
+
+    title = models.ForeignKey(
+        Title, on_delete=models.CASCADE
+    )
+    genre = models.ForeignKey(
+        Genre, on_delete=models.CASCADE
+    )
+
+    class Meta:
+        verbose_name = 'Жанр и произведение'
+        verbose_name_plural = 'Жанры и произведения'
+
+    def __str__(self):
+        return f'{self.title} {self.genre}'
 
 
 class Review(models.Model):
