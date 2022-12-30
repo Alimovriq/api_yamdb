@@ -18,11 +18,12 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 
-from api.views import TitleViewSet
+from api.views import TitleViewSet, CategoryViewSet
 
 router_v1 = DefaultRouter()
 
 router_v1.register('titles', TitleViewSet)
+router_v1.register('categories', CategoryViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

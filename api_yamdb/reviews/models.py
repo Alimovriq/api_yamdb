@@ -3,6 +3,27 @@ from django.db import models
 
 User = get_user_model()
 
+
+class Category(models.Model):
+    """Модель категория."""
+
+    name = models.CharField(
+        'Название',
+        max_length=256
+    )
+    slug = models.SlugField(
+        unique=True,
+        max_length=50
+    )
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
+    def __str__(self):
+        return self.name
+
+
 # Написать модельки Жанров и Категорий, привязать к Произведениям,
 # учесть их связь и удаление.
 class Title(models.Model):
@@ -18,6 +39,13 @@ class Title(models.Model):
     description = models.TextField(
         'Описание',
         null=True
+    )
+    category = models.ForeignKey(
+        Category,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name='Категория',
+        related_name='titles'
     )
 
     class Meta:

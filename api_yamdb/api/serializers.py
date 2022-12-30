@@ -2,7 +2,7 @@ import datetime as dt
 
 from rest_framework import serializers
 
-from reviews.models import Title
+from reviews.models import Title, Category
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -17,3 +17,11 @@ class TitleSerializer(serializers.ModelSerializer):
         if value > current_year:
             raise serializers.ValidationError('Проверьте год произведения!')
         return value
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    """Сериалайзер для категорий."""
+
+    class Meta:
+        model = Category
+        fields = '__all__'
