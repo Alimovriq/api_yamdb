@@ -15,7 +15,7 @@ class CreateListDeleteViewSet(mixins.ListModelMixin,
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """Вьюсет для Произведений."""
+    """Вьюсет для произведений."""
 
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
@@ -23,6 +23,8 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
+    """Вьюсет для категорий."""
+
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = LimitOffsetPagination
