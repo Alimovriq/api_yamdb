@@ -27,6 +27,7 @@ router_v1.register('categories', CategoryViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('users.urls', namespace='users')),
     path(
         'redoc/',
         TemplateView.as_view(template_name='redoc.html'),
