@@ -27,8 +27,8 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
-
-
+        
+        
 class ReviewSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(
         read_only=True, slug_field='username'
@@ -42,4 +42,5 @@ class ReviewSerializer(serializers.ModelSerializer):
     def validate_score(self, value):
         if value < 0 or value > 10:
             raise serializers.ValidationError('Проверьте, что score от 0 до 10!')
-        return value 
+        return value
+ 
