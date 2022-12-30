@@ -2,8 +2,16 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins, filters
 from rest_framework.pagination import LimitOffsetPagination
 
-from reviews.models import Title, Category, User
-from .serializers import TitleSerializer, CategorySerializer, ReviewSerializer
+from reviews.models import (
+    Title,
+    Category,
+    Genre,
+    User)
+from .serializers import (
+    TitleSerializer,
+    CategorySerializer,
+    GenreSerializer,
+    ReviewSerializer)
 
 
 class CreateListDeleteViewSet(mixins.ListModelMixin,
@@ -23,14 +31,24 @@ class TitleViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(CreateListDeleteViewSet):
     """Вьюсет для категорий."""
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('category',)
+    search_fields = ('name',)
+
+
+class GenreViewSet(CreateListDeleteViewSet):
+    """Вьюсет для жанров."""
+
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    pagination_class = LimitOffsetPagination
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name',)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

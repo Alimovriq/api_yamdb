@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator
 
-from reviews.models import Title, Category, Review
+from reviews.models import Title, Category, Genre, Review
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -27,8 +27,16 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
-        
-        
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    """Сериалайзер для жанров."""
+
+    class Meta:
+        model = Genre
+        fields = '__all__'
+
+
 class ReviewSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(
         read_only=True, slug_field='username'
@@ -43,4 +51,4 @@ class ReviewSerializer(serializers.ModelSerializer):
         if value < 0 or value > 10:
             raise serializers.ValidationError('Проверьте, что score от 0 до 10!')
         return value
- 
+
