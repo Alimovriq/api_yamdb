@@ -11,9 +11,11 @@ from api.views import (
     CategoryViewSet,
     GenreViewSet,
     ReviewViewSet,
-    CommentViewSet
+    CommentViewSet,
     ReviewViewSet,
-    UsersViewSet)
+    UsersViewSet
+)
+
 from . import views
 
 router_v1 = DefaultRouter()
@@ -29,7 +31,6 @@ router_v1.register(r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comment
 
 urlpatterns = [
     path('v1/', include(router_v1.urls)),
-    path('', include(router_v1.urls)),
     path(
         'token/',
         TokenObtainPairView.as_view(),
@@ -42,6 +43,6 @@ urlpatterns = [
         'token/verify/',
         TokenVerifyView.as_view(),
         name='token_verify'),
-    path('auth/signup/', views.signup),
-    path('auth/token/', views.token),
+    path('v1/auth/signup/', views.signup),
+    path('v1/auth/token/', views.token),
 ]

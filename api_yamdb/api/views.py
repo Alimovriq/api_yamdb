@@ -25,14 +25,13 @@ from .serializers import (
     MeSerializer,
     ReviewSerializer,
     SignUpSerializer,
-    TokenSerializer)
+    TokenSerializer,
+    CommentSerializer)
 from .permissions import (
     AdminOrReadOnly,
     AdminOnly,
     AdminOrModeratorOrAuthor,
-    UserIsAuthor,
-    ReviewSerializer,
-    CommentSerializer)
+    UserIsAuthor)
 
 from .filters import TitleFilter
 
@@ -93,6 +92,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             serializer.save(author=self.request.user, title=title)
         else:
             raise Exception("Можно оставить только один отзыв!")
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer

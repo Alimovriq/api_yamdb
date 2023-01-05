@@ -48,7 +48,7 @@ class TitleSerializer(serializers.ModelSerializer):
         return value
 
     def get_rating(self, obj):
-        reviews = Review.objects.filter(title_id = obj.id)
+        reviews = Review.objects.filter(title_id=obj.id)
         try:
             reviews[0]
         except Exception:
@@ -163,6 +163,7 @@ class TokenSerializer(serializers.ModelSerializer):
         if str(confirmation_code) != value['confirmation_code']:
             raise ValidationError('Неверный код подтверждения')
         return value
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(
