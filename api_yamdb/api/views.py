@@ -15,7 +15,8 @@ from reviews.models import (
     Title,
     Category,
     Genre,
-    User)
+    User,
+    Review)
 from .serializers import (
     AdminCreationSerializer,
     TitleSerializer,
@@ -29,7 +30,9 @@ from .permissions import (
     AdminOrReadOnly,
     AdminOnly,
     AdminOrModeratorOrAuthor,
-    UserIsAuthor,)
+    UserIsAuthor,
+    ReviewSerializer,
+    CommentSerializer)
 
 from .filters import TitleFilter
 
@@ -83,8 +86,26 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, id=title_id)
-        serializer.save(author=self.request.user, title=title)
+        try:
+            Review.objects.get(title_id=title_id, author=self.request.user)
+        except Exception:
+            title = get_object_or_404(Title, id=title_id)
+            serializer.save(author=self.request.user, title=title)
+        else:
+            raise Exception("Можно оставить только один отзыв!")
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, id=review_id)
+        return review.comments.all()
+
+    def perform_create(self, serializer):
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, id=review_id)
+        serializer.save(author=self.request.user, review=review)
 
 
 class UsersViewSet(viewsets.ModelViewSet):

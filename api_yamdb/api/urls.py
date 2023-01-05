@@ -11,6 +11,8 @@ from api.views import (
     CategoryViewSet,
     GenreViewSet,
     ReviewViewSet,
+    CommentViewSet
+    ReviewViewSet,
     UsersViewSet)
 from . import views
 
@@ -22,8 +24,11 @@ router_v1.register('genres', GenreViewSet)
 router_v1.register('users', UsersViewSet)
 router_v1.register(r'titles/(?P<title_id>\d+)/reviews',
                    ReviewViewSet, basename='reviews')
+router_v1.register(r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
+                   CommentViewSet, basename='comments')
 
 urlpatterns = [
+    path('v1/', include(router_v1.urls)),
     path('', include(router_v1.urls)),
     path(
         'token/',
