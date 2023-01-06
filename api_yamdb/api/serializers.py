@@ -31,21 +31,21 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = 'name', 'slug'
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    """Сериалайзер для произведений."""
+class TitleViewSerializer(serializers.ModelSerializer):
+    """Сериалайзер произведений для чтения."""
+
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
     rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Title
-        fields = 'id', 'name', 'year', 'description', 'genre', 'category', 'rating'
-
-    def validate_year(self, value):
-        current_year = dt.date.today().year
-        if value > current_year:
-            raise serializers.ValidationError('Проверьте год произведения!')
-        return value
+        fields = ('id', 'name', 'year',
+                  'description', 'genre',
+                  'category', 'rating')
+        read_only_fields = ('id', 'name', 'year',
+                            'description', 'genre',
+                            'category', 'rating')
 
     def get_rating(self, obj):
         reviews = Review.objects.filter(title_id=obj.id)
@@ -56,6 +56,33 @@ class TitleSerializer(serializers.ModelSerializer):
         else:
             rating = reviews.aggregate(Sum("score"))
             return rating["score__sum"]
+
+
+class TitleSerializer(TitleViewSerializer):
+    """Сериалайзер произведений для записи."""
+
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all(),
+        many=False,
+        required=True
+    )
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects.all(),
+        many=True,
+        required=True
+    )
+
+    class Meta:
+        model = Title
+        fields = '__all__'
+
+    def validate_year(self, value):
+        current_year = dt.date.today().year
+        if value > current_year:
+            raise serializers.ValidationError('Проверьте год произведения!')
+        return value
 
 
 class ReviewSerializer(serializers.ModelSerializer):

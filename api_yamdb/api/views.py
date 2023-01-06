@@ -20,6 +20,7 @@ from reviews.models import (
 from .serializers import (
     AdminCreationSerializer,
     TitleSerializer,
+    TitleViewSerializer,
     CategorySerializer,
     GenreSerializer,
     MeSerializer,
@@ -36,12 +37,14 @@ from .permissions import (
 from .filters import TitleFilter
 
 
-class CreateListDeleteViewSet(mixins.ListModelMixin,
-                              mixins.CreateModelMixin,
-                              mixins.DestroyModelMixin,
-                              viewsets.GenericViewSet):
+class CreateListDestroyViewSet(mixins.ListModelMixin,
+                               mixins.CreateModelMixin,
+                               mixins.DestroyModelMixin,
+                               viewsets.GenericViewSet):
     """Вьюсет для GET, POST, DELETE методов."""
-
+    permission_classes = [
+        AdminOrReadOnly
+    ]
     pass
 
 
@@ -53,9 +56,15 @@ class TitleViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
+    permission_classes = [AdminOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return TitleViewSerializer
+        return TitleSerializer
 
 
-class CategoryViewSet(CreateListDeleteViewSet):
+class CategoryViewSet(CreateListDestroyViewSet):
     """Вьюсет для категорий."""
 
     queryset = Category.objects.all()
@@ -63,9 +72,13 @@ class CategoryViewSet(CreateListDeleteViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
+
+    def destroy(self, *args, **kwargs):
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class GenreViewSet(CreateListDeleteViewSet):
+class GenreViewSet(CreateListDestroyViewSet):
     """Вьюсет для жанров."""
 
     queryset = Genre.objects.all()
@@ -73,6 +86,10 @@ class GenreViewSet(CreateListDeleteViewSet):
     pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
+
+    def destroy(self, *args, **kwargs):
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
