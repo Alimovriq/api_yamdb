@@ -74,7 +74,9 @@ class CategoryViewSet(CreateListDestroyViewSet):
     search_fields = ('name',)
     lookup_field = 'slug'
 
-    def destroy(self, *args, **kwargs):
+    def delete(self, request, pk, format=None):
+        category = self.model.objects.get(category_id=pk, user=request.user)
+        category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -88,7 +90,9 @@ class GenreViewSet(CreateListDestroyViewSet):
     search_fields = ('name',)
     lookup_field = 'slug'
 
-    def destroy(self, *args, **kwargs):
+    def delete(self, request, pk, format=None):
+        genre = self.model.objects.get(genre_id=pk, user=request.user)
+        genre.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
