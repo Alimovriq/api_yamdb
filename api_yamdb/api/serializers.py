@@ -173,8 +173,7 @@ class MeSerializer(serializers.ModelSerializer):
 class TokenSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         max_length=150,
-        allow_blank=False,
-        validators=[validate_username, username_validator])
+        allow_blank=False)
     confirmation_code = serializers.CharField(allow_blank=False,)
 
     class Meta:
@@ -186,8 +185,9 @@ class TokenSerializer(serializers.ModelSerializer):
 
     def validate(self, value):
         user = get_object_or_404(User, username=value['username'])
-        confirmation_code = default_token_generator.make_token(user)
-        if str(confirmation_code) != value['confirmation_code']:
+        confirmation_code = value['confirmation_code']
+        if default_token_generator.check_token(
+                user, confirmation_code) is False:
             raise ValidationError('Неверный код подтверждения')
         return value
 
