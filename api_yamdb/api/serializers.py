@@ -2,7 +2,7 @@ import datetime as dt
 
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
-from django.db.models import Sum
+from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator
@@ -52,10 +52,10 @@ class TitleViewSerializer(serializers.ModelSerializer):
         try:
             reviews[0]
         except Exception:
-            return 0
+            return None
         else:
-            rating = reviews.aggregate(Sum("score"))
-            return rating["score__sum"]
+            rating = reviews.aggregate(Avg("score"))
+            return rating["score__avg"]
 
 
 class TitleSerializer(TitleViewSerializer):
@@ -102,6 +102,15 @@ class ReviewSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def validate(self, data):
+        if self.context['request'].method == 'POST':
+            title_id = self.context['request'].parser_context['kwargs']['title_id']
+            author = self.context['request'].user
+            if author.reviews.filter(title_id=title_id).exists():
+                raise serializers.ValidationError(
+                    'Вы уже оставили свой отзыв.'
+                    )
+        return data
 
 class SignUpSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
