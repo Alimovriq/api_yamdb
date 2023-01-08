@@ -3,6 +3,11 @@ from django.db import models
 
 
 class User(AbstractUser):
+    """
+    Доработанная модель пользователей, унаследованная от AbstractUser.
+    У пользователя есть определенная роль и биография.
+    """
+
     USER = 'user'
     ADMIN = 'admin'
     MODERATOR = 'moderator'

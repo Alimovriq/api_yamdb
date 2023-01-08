@@ -41,7 +41,10 @@ class CreateListDestroyViewSet(mixins.ListModelMixin,
                                mixins.CreateModelMixin,
                                mixins.DestroyModelMixin,
                                viewsets.GenericViewSet):
-    """Вьюсет для GET, POST, DELETE методов."""
+    """
+    Вьюсет для GET, POST, DELETE методов включает пермишен.
+    """
+
     permission_classes = [
         AdminOrReadOnly
     ]
@@ -49,7 +52,10 @@ class CreateListDestroyViewSet(mixins.ListModelMixin,
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """Вьюсет для произведений."""
+    """
+    Получать произведения доступно всем.
+    Создавать и редактировать доступно только администратору.
+    """
 
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
@@ -65,7 +71,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
-    """Вьюсет для категорий."""
+    """
+    Получать категории доступно всем.
+    Создавать и удалять доступно только администратору.
+    """
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -81,7 +90,10 @@ class CategoryViewSet(CreateListDestroyViewSet):
 
 
 class GenreViewSet(CreateListDestroyViewSet):
-    """Вьюсет для жанров."""
+    """
+    Получать жанры доступно всем.
+    Создавать и удалять доступно тлько администратору.
+    """
 
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
@@ -97,13 +109,19 @@ class GenreViewSet(CreateListDestroyViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """
+    Получать отзывы доступно всем.
+    Добавлять отзывы доступно аутентифицированным пользователям.
+    Изменять и удалять доступно автору, модератору или администратору.
+    """
+
     serializer_class = ReviewSerializer
     permission_classes = [AdminOrModeratorOrAuthor]
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
         title = get_object_or_404(Title, id=title_id)
-        return title.reviews.all()
+        return title.reviews.all().order_by('id')
 
     def perform_create(self, serializer):
         title_id = self.kwargs.get('title_id')
@@ -112,13 +130,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """
+    Получать комментарии доступно всем.
+    Добавлять отзывы доступно аутентифицированным пользователям.
+    Изменять и удалять доступно автору, модератору или администратору.
+    """
+
     serializer_class = CommentSerializer
     permission_classes = [AdminOrModeratorOrAuthor]
 
     def get_queryset(self):
         review_id = self.kwargs.get('review_id')
         review = get_object_or_404(Review, id=review_id)
-        return review.comments.all()
+        return review.comments.all().order_by('id')
 
     def perform_create(self, serializer):
         review_id = self.kwargs.get('review_id')
@@ -127,6 +151,14 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class UsersViewSet(viewsets.ModelViewSet):
+    """
+    Данное представление необходимо для работы с пользователями.
+    Авторизованный пользователь может получать данные своей учетной записи.
+    Авторизованный пользователь может изменять данные своей учетной запси.
+    Админстратор может получать, изменять, удалять данные пользователей.
+    Администратор может добавлять пользователей.
+    """
+
     queryset = User.objects.all()
     serializer_class = AdminCreationSerializer
     lookup_field = 'username'
@@ -166,6 +198,12 @@ def get_or_none(classmodel, **kwargs):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup(request):
+    """
+    Данная функция предназначена для регистрации пользователей.
+    Пользователю приходит confirmation_code на указанный email.
+    Затем, пользователь использует этот код для получения токена.
+    """
+
     serializer = SignUpSerializer(data=request.data)
     user = get_or_none(
         User,
@@ -201,6 +239,10 @@ def signup(request):
 
 
 def tokens_for_user(user):
+    """
+    Данная функция необходима для создания токенов для пользователй.
+    """
+
     tokens = RefreshToken.for_user(user)
     refresh = str(tokens)
     access = str(tokens.access_token)
@@ -214,6 +256,11 @@ def tokens_for_user(user):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def token(request):
+    """
+    Данная функция работает с confirmation_code и токенами.
+    Если код верный, то пользователю возвращается токен для доступа.
+    """
+
     serializer = TokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = get_object_or_404(User, username=request.data['username'])

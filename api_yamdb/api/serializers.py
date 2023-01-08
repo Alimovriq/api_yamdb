@@ -1,22 +1,18 @@
 import datetime as dt
 
 from django.contrib.auth.tokens import default_token_generator
-from django.shortcuts import get_object_or_404
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
-from rest_framework.validators import UniqueTogetherValidator
 from rest_framework.exceptions import ValidationError
+from rest_framework.relations import SlugRelatedField
 
-from reviews.models import Title, Category, Genre, Review, User, Comment
-from .validators import (
-    validate_email,
-    validate_username,
-    username_validator,)
+from reviews.models import Category, Comment, Genre, Review, Title, User
+from .validators import username_validator, validate_email, validate_username
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Сериалайзер для категорий."""
+    """Сериализатор для категорий."""
 
     class Meta:
         model = Category
@@ -24,7 +20,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    """Сериалайзер для жанров."""
+    """Сериализатор для жанров."""
 
     class Meta:
         model = Genre
@@ -32,7 +28,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleViewSerializer(serializers.ModelSerializer):
-    """Сериалайзер произведений для чтения."""
+    """Сериализатор произведений для чтения."""
 
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
@@ -59,7 +55,7 @@ class TitleViewSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(TitleViewSerializer):
-    """Сериалайзер произведений для записи."""
+    """Сериализатор произведений для записи."""
 
     category = serializers.SlugRelatedField(
         slug_field='slug',
@@ -86,6 +82,8 @@ class TitleSerializer(TitleViewSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Сериализатор для отзывов."""
+
     author = SlugRelatedField(
         read_only=True, slug_field='username'
     )
@@ -104,15 +102,19 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if self.context['request'].method == 'POST':
-            title_id = self.context['request'].parser_context['kwargs']['title_id']
+            title_id = (
+                self.context['request'].parser_context['kwargs']['title_id'])
             author = self.context['request'].user
             if author.reviews.filter(title_id=title_id).exists():
                 raise serializers.ValidationError(
                     'Вы уже оставили свой отзыв.'
-                    )
+                )
         return data
 
+
 class SignUpSerializer(serializers.ModelSerializer):
+    """Сериализатор для регистрации новых пользователей."""
+
     email = serializers.EmailField(
         max_length=254,
         allow_blank=False,
@@ -131,6 +133,10 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 
 class AdminCreationSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для администратора, который может создавать пользователей.
+    """
+
     email = serializers.EmailField(
         max_length=254,
         allow_blank=False,
@@ -153,6 +159,8 @@ class AdminCreationSerializer(serializers.ModelSerializer):
 
 
 class MeSerializer(serializers.ModelSerializer):
+    """Сериализатор для профиля пользователя."""
+
     email = serializers.EmailField(
         max_length=254,
         allow_blank=False,
@@ -180,6 +188,10 @@ class MeSerializer(serializers.ModelSerializer):
 
 
 class TokenSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для токена с учетом проверки confirmation_code.
+    """
+
     username = serializers.CharField(
         max_length=150,
         allow_blank=False)
@@ -202,6 +214,10 @@ class TokenSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для комментариев.
+    """
+
     author = SlugRelatedField(
         read_only=True, slug_field='username'
     )

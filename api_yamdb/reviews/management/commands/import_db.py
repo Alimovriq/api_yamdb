@@ -1,17 +1,9 @@
 from csv import DictReader
+
 from django.core.management import BaseCommand
 
-from reviews.models import (
-    Title,
-    Category,
-    Genre,
-    Comment,
-    Review,
-    GenreTitle
-)
-
+from reviews.models import Category, Comment, Genre, GenreTitle, Review, Title
 from users.models import User
-
 
 MESSAGE = """
 При необходиомсти загрузить данные из CSV файла,

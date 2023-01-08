@@ -2,6 +2,10 @@ from rest_framework import permissions
 
 
 class AdminOrReadOnly(permissions.BasePermission):
+    """
+    Администратор имеет полный доступ.
+    Остальные пользователи могут только читать.
+    """
 
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
@@ -18,6 +22,7 @@ class AdminOrReadOnly(permissions.BasePermission):
 
 
 class AdminOnly(permissions.BasePermission):
+    """Только администратор имеет полный доступ."""
 
     def has_object_permission(self, request, view, obj):
         if request.user.is_authenticated:
@@ -33,6 +38,10 @@ class AdminOnly(permissions.BasePermission):
 
 
 class AdminOrModeratorOrAuthor(permissions.BasePermission):
+    """
+    Полный доступ у администратора, модератора и автора.
+    Остальные пользователи могут только получать информацию.
+    """
 
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
@@ -54,6 +63,7 @@ class AdminOrModeratorOrAuthor(permissions.BasePermission):
 
 
 class UserIsAuthor(permissions.BasePermission):
+    """Доступ к объекту толоько у автора."""
 
     def has_object_permission(self, request, view, obj):
         return obj.user == request.user

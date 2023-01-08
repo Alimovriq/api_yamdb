@@ -5,7 +5,7 @@ User = get_user_model()
 
 
 class Genre(models.Model):
-    """Модель жанр."""
+    """Модель жанров."""
 
     name = models.CharField(
         'название',
@@ -25,7 +25,7 @@ class Genre(models.Model):
 
 
 class Category(models.Model):
-    """Модель категория."""
+    """Модель категорий."""
 
     name = models.CharField(
         'Название',
@@ -45,7 +45,7 @@ class Category(models.Model):
 
 
 class Title(models.Model):
-    """Модель произведение."""
+    """Модель произведений."""
 
     name = models.CharField(
         'Название',
@@ -97,6 +97,8 @@ class GenreTitle(models.Model):
 
 
 class Review(models.Model):
+    """Модель отзывов."""
+
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews')
     title = models.ForeignKey(
@@ -115,8 +117,9 @@ class Review(models.Model):
         ]
 
 
-
 class Comment(models.Model):
+    """Модель комментариев."""
+
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments')
     review = models.ForeignKey(
