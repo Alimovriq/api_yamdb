@@ -106,6 +106,15 @@ class Review(models.Model):
         'Дата добавления', auto_now_add=True, db_index=True)
     score = models.IntegerField()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='unique_name_author'
+            )
+        ]
+
+
 
 class Comment(models.Model):
     author = models.ForeignKey(

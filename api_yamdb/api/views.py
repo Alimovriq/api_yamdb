@@ -98,6 +98,7 @@ class GenreViewSet(CreateListDestroyViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
+    permission_classes = [AdminOrModeratorOrAuthor]
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -106,17 +107,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         title_id = self.kwargs.get('title_id')
-        try:
-            Review.objects.get(title_id=title_id, author=self.request.user)
-        except Exception:
-            title = get_object_or_404(Title, id=title_id)
-            serializer.save(author=self.request.user, title=title)
-        else:
-            raise Exception("Можно оставить только один отзыв!")
+        title = get_object_or_404(Title, id=title_id)
+        serializer.save(author=self.request.user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
+    permission_classes = [AdminOrModeratorOrAuthor]
 
     def get_queryset(self):
         review_id = self.kwargs.get('review_id')
