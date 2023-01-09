@@ -190,13 +190,6 @@ class UsersViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-def get_or_none(classmodel, **kwargs):
-    try:
-        return classmodel.objects.get(**kwargs)
-    except classmodel.DoesNotExist:
-        return None
-
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup(request):
