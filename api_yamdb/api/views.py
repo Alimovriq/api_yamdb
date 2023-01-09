@@ -224,39 +224,6 @@ def signup(request):
         fail_silently=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-    '''serializer = SignUpSerializer(data=request.data)
-    user = get_or_none(
-        User,
-        username=request.data.get('username'),
-        email=request.data.get('email'))
-    if user is None:
-        serializer.is_valid(raise_exception=True)
-        if not User.objects.filter(username=request.data['username'],
-                                   email=request.data['email']).exists():
-            serializer.save()
-        user = User.objects.get(username=request.data['username'],
-                                email=request.data['email'])
-        confirmation_code = default_token_generator.make_token(user)
-        send_mail(
-            f'Привет, {str(user.username)}! Твой код подтверждения ниже!',
-            confirmation_code,
-            settings.EMAIL_FOR_AUTH_LETTERS,
-            [request.data['email']],
-            fail_silently=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    else:
-        serializer.is_valid()
-        user = User.objects.get(username=request.data['username'],
-                                email=request.data['email'])
-        confirmation_code = default_token_generator.make_token(user)
-        send_mail(
-            f'Привет, {str(user.username)}! Твой код подтверждения ниже!',
-            confirmation_code,
-            settings.EMAIL_FOR_AUTH_LETTERS,
-            [request.data['email']],
-            fail_silently=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)'''
-
 
 def tokens_for_user(user):
     """
