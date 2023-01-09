@@ -107,7 +107,7 @@ class Review(models.Model):
     text = models.TextField()
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
-    score = models.IntegerField()
+    score = models.PositiveIntegerField()
 
     class Meta:
         constraints = [

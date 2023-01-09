@@ -1,7 +1,6 @@
 import datetime as dt
 
 from django.contrib.auth.tokens import default_token_generator
-from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -32,30 +31,21 @@ class TitleViewSerializer(serializers.ModelSerializer):
 
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField()
 
     class Meta:
         model = Title
         fields = ('id', 'name', 'year',
-                  'description', 'genre',
-                  'category', 'rating')
+                  'rating', 'description', 'genre',
+                  'category')
         read_only_fields = ('id', 'name', 'year',
                             'description', 'genre',
                             'category', 'rating')
 
-    def get_rating(self, obj):
-        reviews = Review.objects.filter(title_id=obj.id)
-        try:
-            reviews[0]
-        except Exception:
-            return None
-        else:
-            rating = reviews.aggregate(Avg("score"))
-            return rating["score__avg"]
-
 
 class TitleSerializer(TitleViewSerializer):
     """Сериализатор произведений для записи."""
+    rating = serializers.IntegerField(read_only=True)
 
     category = serializers.SlugRelatedField(
         slug_field='slug',
