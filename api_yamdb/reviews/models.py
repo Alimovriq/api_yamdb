@@ -51,8 +51,9 @@ class Title(models.Model):
         'Название',
         max_length=256
     )
-    year = models.IntegerField(
-        'Год'
+    year = models.PositiveIntegerField(
+        'Год',
+        db_index=True
     )
     description = models.TextField(
         'Описание',
