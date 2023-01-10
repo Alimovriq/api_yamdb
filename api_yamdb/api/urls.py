@@ -19,6 +19,12 @@ router_v1.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
     CommentViewSet, basename='comments')
 
+auth_urls = [
+    path('signup/', views.signup),
+    path('token/', views.token),
+
+]
+
 urlpatterns = [
     path('v1/', include(router_v1.urls)),
     path(
@@ -33,6 +39,5 @@ urlpatterns = [
         'token/verify/',
         TokenVerifyView.as_view(),
         name='token_verify'),
-    path('v1/auth/signup/', views.signup),
-    path('v1/auth/token/', views.token),
+    path('v1/auth/', include(auth_urls)),
 ]
